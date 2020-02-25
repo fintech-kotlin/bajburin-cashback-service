@@ -55,6 +55,20 @@ class CardNumberMaskerImplTest {
     }
 
     @Test
+    fun `test masking with start index bigger than card number length`() {
+        assertThrows(java.lang.Exception::class.java,
+            {
+                observable.mask(
+                    cardNumber = CARD_NUMBER,
+                    start = 16,
+                    end = 20
+                )
+            },
+            "Start index cannot be greater than end index"
+        )
+    }
+
+    @Test
     fun `test masking length equals zero`() {
         val maskedCardNumber = observable.mask(cardNumber = CARD_NUMBER, start = 4, end = 4)
         assertEquals(CARD_NUMBER, maskedCardNumber)
