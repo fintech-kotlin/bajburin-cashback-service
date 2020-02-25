@@ -6,7 +6,7 @@ class NotificationMessageGeneratorImpl(
     private val cardNumberMasker: CardNumberMasker
 ) : NotificationMessageGenerator {
 
-    override fun generateMessage(notificationMessageInfo: NotificationMessageInfo): String =
+    override fun generateMessage(notificationMessageInfo: NotificationMessageInfo) =
         with(notificationMessageInfo) {
         """Уважаемый, $name!
         |Спешим Вам сообщить, что на карту ${cardNumberMasker.mask(cardNumber)}
