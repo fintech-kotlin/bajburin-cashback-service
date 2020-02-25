@@ -3,7 +3,7 @@ package ru.tinkoff.fintech.service.notification
 class CardNumberMaskerImpl: CardNumberMasker {
 
     override fun mask(cardNumber: String, maskChar: Char, start: Int, end: Int): String {
-        require(start <= end) {
+        require(start <= end && (start < cardNumber.length || start == 0)) {
             throw IndexOutOfBoundsException("Start index cannot be greater than end index")
         }
 
