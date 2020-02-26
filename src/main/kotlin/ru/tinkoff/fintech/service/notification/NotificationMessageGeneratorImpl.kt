@@ -6,7 +6,13 @@ class NotificationMessageGeneratorImpl(
     private val cardNumberMasker: CardNumberMasker
 ) : NotificationMessageGenerator {
 
-    override fun generateMessage(notificationMessageInfo: NotificationMessageInfo): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun generateMessage(notificationMessageInfo: NotificationMessageInfo) =
+        with(notificationMessageInfo) {
+        """Уважаемый, $name!
+        |Спешим Вам сообщить, что на карту ${cardNumberMasker.mask(cardNumber)}
+        |начислен cashback в размере $cashback
+        |за категорию $category.
+        |Спасибо за покупку $transactionDate""".trimMargin()
+        }
+
 }
