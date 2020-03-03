@@ -33,45 +33,45 @@ class CashbackCalculatorImpl : CashbackCalculator {
     override fun calculateCashback(transactionInfo: TransactionInfo): Double {
         var result = .0
 
-        if (transactionInfo.loyaltyProgramName == LOYALTY_PROGRAM_BLACK) {
-            result += transactionInfo.transactionSum / 100
-        }
+        with(transactionInfo) {
+            if (loyaltyProgramName == LOYALTY_PROGRAM_BLACK) {
+                result += transactionSum / 100
+            }
 
-        if (transactionInfo.transactionSum % 666.0 == .0) {
-            result += 6.66
-        }
+            if (transactionSum % 666.0 == .0) {
+                result += 6.66
+            }
 
-        transactionInfo.mccCode?.let {
-            if (transactionInfo.mccCode == 5734 && transactionInfo.loyaltyProgramName == LOYALTY_PROGRAM_ALL) {
-                val testSum = ceil(transactionInfo.transactionSum * 100).toInt().toString()
-                if (testSum.zip(testSum.reversed()){a, b -> if (a != b) 1 else 0}.sum() <= 2) {
+            mccCode?.let {
+                if (mccCode == MCC_SOFTWARE && loyaltyProgramName == LOYALTY_PROGRAM_ALL) {
+                    val testSum = ceil(transactionSum * 100).toInt().toString()
+                    if (testSum.zip(testSum.reversed()){a, b -> if (a != b) 1 else 0}.sum() <= 2) {
 
-                    val nameLen = transactionInfo.firstName.length
-                    val snameLen = transactionInfo.lastName.length
+                        val nameLen = transactionInfo.firstName.length
+                        val snameLen = transactionInfo.lastName.length
 
-                    var lcm = 1
-                    while (lcm % nameLen != 0 || lcm % snameLen != 0) {
-                        ++lcm
+                        var lcm = 1
+                        while (lcm % nameLen != 0 || lcm % snameLen != 0) {
+                            ++lcm
+                        }
+                        result += lcm.toDouble() / 100000.0 * transactionSum
                     }
-                    result += lcm.toDouble() / 100000.0 * transactionInfo.transactionSum
                 }
-            }
 
-            if (transactionInfo.loyaltyProgramName == LOYALTY_PROGRAM_BEER && transactionInfo.mccCode == 5921) {
-                result += when {
-                    transactionInfo.firstName.toLowerCase() == "олег" && transactionInfo.lastName.toLowerCase() == "олегов" -> transactionInfo.transactionSum * 0.1
-                    transactionInfo.firstName.toLowerCase() == "олег" -> transactionInfo.transactionSum * 0.07
-                    monthWithFirstLetter[LocalDate.now().month.value] == transactionInfo.firstName[0] -> transactionInfo.transactionSum * 0.05
-                    monthWithFirstLetter[LocalDate.now().minusMonths(1).month.value] == transactionInfo.firstName[0] -> transactionInfo.transactionSum * 0.03
-                    monthWithFirstLetter[LocalDate.now().plusMonths(1).month.value] == transactionInfo.firstName[0] -> transactionInfo.transactionSum * 0.03
-                    else -> transactionInfo.transactionSum * 0.02
+                if (loyaltyProgramName == LOYALTY_PROGRAM_BEER && mccCode == MCC_BEER) {
+                    result += when {
+                        firstName.toLowerCase() == "олег" && lastName.toLowerCase() == "олегов" -> transactionSum * 0.1
+                        firstName.toLowerCase() == "олег" -> transactionSum * 0.07
+                        monthWithFirstLetter[LocalDate.now().month.value] == firstName[0] -> transactionSum * 0.05
+                        monthWithFirstLetter[LocalDate.now().minusMonths(1).month.value] == firstName[0] -> transactionSum * 0.03
+                        monthWithFirstLetter[LocalDate.now().plusMonths(1).month.value] == firstName[0] -> transactionSum * 0.03
+                        else -> transactionSum * 0.02
+                    }
                 }
             }
+            result = round(result * 100) / 100
+
+            return minOf(3000.0 - cashbackTotalValue, result)
         }
-
-        result = round(result * 100) / 100
-
-        return minOf(3000.0 - transactionInfo.cashbackTotalValue, result)
     }
-
 }
