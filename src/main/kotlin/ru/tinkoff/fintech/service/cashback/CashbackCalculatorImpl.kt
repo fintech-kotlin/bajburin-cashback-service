@@ -3,7 +3,6 @@ package ru.tinkoff.fintech.service.cashback
 import ru.tinkoff.fintech.model.TransactionInfo
 import java.time.LocalDate
 import java.time.Month
-import kotlin.math.ceil
 import kotlin.math.round
 
 internal const val LOYALTY_PROGRAM_BLACK = "BLACK"
@@ -34,28 +33,11 @@ class CashbackCalculatorImpl : CashbackCalculator {
         var result = .0
 
         with(transactionInfo) {
-            if (loyaltyProgramName == LOYALTY_PROGRAM_BLACK) {
-                result += transactionSum / 100
-            }
-
-            result += SixSixSix().calculate(transactionInfo)
+            result += BlackRule().calculate(transactionInfo)
+            result += SixSixSixRule().calculate(transactionInfo)
+            result += CompRule().calculate(transactionInfo)
 
             mccCode?.let {
-                if (mccCode == MCC_SOFTWARE && loyaltyProgramName == LOYALTY_PROGRAM_ALL) {
-                    val testSum = ceil(transactionSum * 100).toInt().toString()
-                    if (testSum.zip(testSum.reversed()){a, b -> if (a != b) 1 else 0}.sum() <= 2) {
-
-                        val nameLen = transactionInfo.firstName.length
-                        val snameLen = transactionInfo.lastName.length
-
-                        var lcm = 1
-                        while (lcm % nameLen != 0 || lcm % snameLen != 0) {
-                            ++lcm
-                        }
-                        result += lcm.toDouble() / 100000.0 * transactionSum
-                    }
-                }
-
                 if (loyaltyProgramName == LOYALTY_PROGRAM_BEER && mccCode == MCC_BEER) {
                     result += when {
                         firstName.toLowerCase() == "олег" && lastName.toLowerCase() == "олегов" -> transactionSum * 0.1
