@@ -38,9 +38,7 @@ class CashbackCalculatorImpl : CashbackCalculator {
                 result += transactionSum / 100
             }
 
-            if (transactionSum % 666.0 == .0) {
-                result += 6.66
-            }
+            result += SixSixSix().calculate(transactionInfo)
 
             mccCode?.let {
                 if (mccCode == MCC_SOFTWARE && loyaltyProgramName == LOYALTY_PROGRAM_ALL) {
